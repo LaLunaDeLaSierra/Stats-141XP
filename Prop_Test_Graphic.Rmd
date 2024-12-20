@@ -1,0 +1,41 @@
+---
+title: "Chi sq. Graphic"
+author: "Katie Munteanu"
+date: "2024-05-21"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+suppressWarnings(library(ggplot2))
+suppressWarnings(library(cowplot))
+english_data <- read.csv("English_Data_Clean.csv")
+
+english_data$interval <- factor(ifelse(english_data$interval, "In Interval", "Out of Interval"))
+english_data$accurate <- factor(ifelse(english_data$accurate, "Accurate", "Inaccurate"))
+english_data$accurate <- factor(english_data$accurate, levels = c("Inaccurate", "Accurate"))
+```
+
+```{r}
+custom_colors <- c("Accurate" = "lightgreen", "Inaccurate" = "lightcoral")
+
+p <- ggplot(english_data, aes(fill = accurate, x = interval, y = AWPE)) +
+  geom_bar(position = "fill", stat = "identity") +
+  labs(x = "Interval Category", y = "Proportion of AWPE scores", fill = "Category") +
+  theme_minimal() + 
+  scale_fill_manual(values = custom_colors)
+
+p_value <- 6.114063e-06
+
+p_annotated <- ggdraw() +
+  draw_plot(p) + 
+  draw_text(
+    paste("P-Value =", format(p_value, digits = 2, scientific = TRUE)),
+    x = .9, y = .8, size = 12, hjust = 0.5
+  )
+
+p_annotated
+```
