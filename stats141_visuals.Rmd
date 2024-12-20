@@ -1,0 +1,65 @@
+---
+title: "stats141_visuals"
+author: "Jade Gregory"
+date: "2024-05-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+# install.packages("RColorBrewer")
+library(RColorBrewer)
+```
+
+## graphic that displays the overall proportion of students in the interval
+```{r}
+edat <- read.csv("English_Data_Clean.csv")
+head(edat)
+```
+```{r}
+# creating a bar chart that displays amount of students in the interval vs out of the interval
+ggplot(edat, aes(x = interval)) +
+  geom_bar(fill = c("#FF6666", "#3399FF")) +
+  labs(title = "Number of Students within Interval and Outside Interval", x = "In Interval", y = "Count") 
+```
+
+```{r}
+sum(edat$interval == TRUE)
+sum(edat$interval == FALSE)
+```
+
+In our data set, 374 students fall within our interval and 693 students fall outside our interval.
+
+```{r}
+# bar chart displaying where students who fall in the interval were placed byb the english department
+
+# creating subset with only students who are in the interval
+edat_sub <- edat[edat$interval == TRUE,]
+head(edat_sub)
+
+# creating bar graph
+ggplot(edat_sub, aes(x = ENG_Place)) +
+  geom_bar(fill = c("#D7301F", "#1B9E77", "#7570B3")) +
+  labs(title = "What Class Students within Interval Place Into", x = "Class", y = "Count") 
+```
+
+```{r}
+sum(edat_sub$ENG_Place == "1")
+sum(edat_sub$ENG_Place == "2")
+sum(edat_sub$ENG_Place == "3")
+```
+
+Of students who fall within our interval, 5 place into class 1, 118 place into class 2, and 251 place into class 3.
+
+## new work seeing how many students in interval correctly self place
+```{r}
+sum(edat_sub$ENG_Place == edat_sub$Self_Place, na.rm = TRUE)
+```
+```{r}
+dim(edat_sub)
+```
+```{r}
+227/374
+```
+

@@ -1,0 +1,61 @@
+---
+title: "stats141_logregfinalproj"
+author: "Jade Gregory"
+date: "2024-05-20"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+# install.packages("effects")
+library(effects)
+```
+
+## logistic regression model for our data
+```{r}
+engdat <- read.csv("English_Data_Clean.csv")
+engdat$Accurate <- engdat$Category == "A"
+head(engdat)
+```
+
+```{r}
+# my logistic regression model with interaction effect between interval and GPA
+englog1 <- glm(Accurate ~ interval * GPA, data = engdat, family = "binomial")
+summary(englog1)
+plot(allEffects(englog1))
+```
+
+This plot is showing us how the probability of an accurate self placement changes across different combinations of interval value and GPA value. When we are not in our selected interval of [41, 48], predicted probability of accurately self placing decreases as GPA increases. Similarly for when we are in our selected interval of [41, 48], predicted probability of accurately self placing decreases as GPA increases, though it has a slightly less negative slope compared to our graph for when we are not in our interval.
+
+```{r}
+# my logistic regression model with no interaction effect between interval and GPA
+englog2 <- glm(Accurate ~ interval + GPA, data = engdat, family = "binomial")
+summary(englog2)
+plot(allEffects(englog2))
+```
+The left plot shows us the predicted probabilities based off of whether the AWPE score is in our interval ([41, 48]) or not. Being in the interval (TRUE) has a higher expected probability (0.60) of accurately self placing than not being in the interval (about 0.47). The right plot displays the predicted probabilities of accuracy based off of different GPA values. As GPA increases, expected probability of accurately self placing decreases.
+
+```{r}
+# my logistic regression model with interval only
+englog3 <- glm(Accurate ~ interval, data = engdat, family = "binomial")
+summary(englog3)
+plot(allEffects(englog3))
+```
+This plot is showing us very similar information as our previous model's, englog2, left plot. Accuracy is higher when we are in our selected interval than when we are not in our interval. 
+
+```{r}
+# Partial f tests for model selection
+# null is that reduced model is sufficient
+anova(englog3, englog1, test = "Chisq")
+```
+
+```{r}
+anova(englog3, englog2, test = "Chisq")
+```
+
+Both anovas return with p values greater than 0.05 meaning we fail to reject our null hypothesis and can conclude that there is sufficient statistical evidence that our reduced model is a sufficient model.
+
+
